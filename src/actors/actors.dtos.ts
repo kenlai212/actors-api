@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, MaxLength, IsEmail, IsOptional, IsDateString, IsEnum, IsUUID, IsArray } from 'class-validator';
 import { ActorType, Country, Gender, ResidencyStatus } from "./actor.entity";
-import { EmailAddressDTO } from "./emailAddresses/emailAddresses.dtos";
+import { CountryCode, PhoneNumberType } from "./phoneNumber.entity";
 
 export class ActorDTO {
     @ApiProperty({
@@ -37,6 +37,11 @@ export class ActorDTO {
         description: `Actors's Email Addresses`
     })
     emailAddresses: EmailAddressDTO[];
+
+    @ApiPropertyOptional({
+        description: `Actors's Phone Numbers`
+    })
+    phoneNumbers: PhoneNumberDTO[];
 
     @ApiProperty({
         description: 'Record creation datetime'
@@ -106,6 +111,35 @@ export class NewActorRequestDTO {
     emailAddress: string;
 
     @ApiPropertyOptional({
+        description: `Phone Number Country Code ${Object.values(CountryCode)}`,
+        example: CountryCode.HK,
+        enum: CountryCode,
+        enumName: "countryCode"
+    })
+    @IsOptional()
+    @IsEnum(CountryCode)
+    countryCode: CountryCode;
+
+    @ApiPropertyOptional({
+        description: `Phone Number String`,
+        example: `12345678`
+    })
+    @IsOptional()
+    @IsString()
+    @MaxLength(36)
+    numberString: string;
+
+    @ApiPropertyOptional({
+        description: `Phone Number Type ${Object.values(PhoneNumberType)}`,
+        example: PhoneNumberType.MOBILE,
+        enum: PhoneNumberType,
+        enumName: "PhoneNumberType"
+    })
+    @IsOptional()
+    @IsEnum(PhoneNumberType)
+    phoneNumberType: PhoneNumberType;
+
+    @ApiPropertyOptional({
         description: `Actor's gender : ${Object.keys(Gender)}`,
         example: `${Gender.FEMALE}`,
         enum: Gender
@@ -139,6 +173,38 @@ export class NewActorRequestDTO {
     @IsOptional()
     @IsEnum(ResidencyStatus)
     residencyStatus: ResidencyStatus;
+}
+export class EmailAddressDTO {
+    addressString: string;
+    default: boolean;
+}
+
+export class PhoneNumberDTO {
+    @ApiProperty({
+        description: 'PhoneNumber ID',
+    })
+    phoneNumberId: string;
+
+    @ApiProperty({
+        description: 'Phone Number country code',
+        enum: CountryCode,
+        example: CountryCode.HK
+    })
+    countryCode: CountryCode;
+
+    @ApiProperty({
+        description: 'Phone Number',
+        example: "12345678"
+    })
+    numberString: string;
+
+    @ApiProperty({
+        description: 'Phone Number Type',
+        enum: PhoneNumberType,
+        enumName: "PhoneNumberType",
+        example: PhoneNumberType.MOBILE
+    })
+    phoneNumberType: PhoneNumberType;
 }
 
 export class UpdateActorDTO extends NewActorRequestDTO {

@@ -5,7 +5,7 @@ import { ActorsController } from "./actors.controller";
 import { ActorsService } from "./actors.service";
 import { HttpModule } from "@nestjs/axios";
 import { EmailAddressesReadModule } from "../emailAddressesRead/emailAddressesRead.module";
-import { EmailAddressesService } from "./emailAddresses/emailAddresses.service";
+import { EmailAddressesService } from "./emailAddresses.service";
 
 @Module({
     imports: [

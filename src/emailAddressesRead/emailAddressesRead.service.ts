@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { EmailAddressReadDTO, FindEmailAddressRequestDTO } from "./emailAddressesRead.dtos";
 
 @Injectable()
-export class EmailAdddressesReadService {
+export class EmailAddressesReadService {
     private readonly logger = new Logger(this.constructor.name);
 
     constructor(

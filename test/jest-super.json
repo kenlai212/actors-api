@@ -4,10 +4,13 @@
     "json",
     "ts"
   ],
-  "rootDir": "./e2e",
+  "rootDir": "./super",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": ".super-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "globals": {
+    "API_URL": "http://localhost:8080"
   }
 }

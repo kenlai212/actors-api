@@ -3,9 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ActorType, Actor } from "./actor.entity";
 import { Repository } from "typeorm";
 import { ActorDTO, NewActorRequestDTO, SearchActorsRequestDTO, SearchActorsResponseDTO, UpdateActorDTO } from "./actors.dtos";
-import { EmailAdddressesReadService } from "../emailAddressesRead/emailAddressesRead.service";
-import { EmailAddress } from "./emailAddresses/emailAddress.entity";
-import { EmailAddressesService } from "./emailAddresses/emailAddresses.service";
+import { EmailAddressesService } from "./emailAddresses.service";
 
 @Injectable()
 export class ActorsService {
@@ -14,48 +12,49 @@ export class ActorsService {
     constructor(
         @InjectRepository(Actor)
         private readonly entityRepository: Repository<Actor>,
-        private readonly emailAddressesService: EmailAddressesService,
-        private readonly emailAddressesReadService: EmailAdddressesReadService
+        private readonly emailAddressesService: EmailAddressesService
     ) { }
 
     async createActor(dto: NewActorRequestDTO): Promise<ActorDTO> {
-        let entity = new Actor();
-        entity.fullName = dto.fullName;
+        let actor = new Actor();
+        actor.fullName = dto.fullName;
 
-        entity.dob = dto.dob;
-        entity.gender = dto.gender;
-        entity.countryOfResidence = dto.countryOfResidence;
-        entity.actorType = dto.ActorType;
-        entity.residencyStatus = dto.residencyStatus;
+        actor.dob = dto.dob;
+        actor.gender = dto.gender;
+        actor.countryOfResidence = dto.countryOfResidence;
+        actor.actorType = dto.ActorType;
+        actor.residencyStatus = dto.residencyStatus;
 
-        //validate emailAddress if exist in request body
-        if (dto.emailAddress) {
-            if (await this.emailAddressesReadService.checkingExisting(dto.emailAddress))
-                throw new BadRequestException(`Existing Email Address : ${dto.emailAddress}`)
+        //validate emailaddress and add to actor entity if email address is provided in the request
+        if (dto.emailAddress)
+            actor = await this.emailAddressesService.addNewEmailAddress(actor, dto.emailAddress, true);
 
-            let emailAddressEntity = new EmailAddress();
-            emailAddressEntity.addressString = dto.emailAddress,
-                emailAddressEntity.default = true
-            entity.emailAddresses = [emailAddressEntity];
+        //add phone number to actor entity if phone number string, country code and phone number type are provided in the request
+        if (dto.numberString && dto.countryCode && dto.phoneNumberType) {
+            actor.phoneNumbers = [{
+                numberString: dto.numberString,
+                countryCode: dto.countryCode,
+                phoneNumberType: dto.phoneNumberType
+            }]
         }
 
-        ///////////////////////////save Actor record //////////////////////////
-        entity = await this.entityRepository.save(entity)
+        //save Actor record 
+        actor = await this.entityRepository.save(actor)
             .catch((error) => {
                 this.logger.error(error.stack);
                 throw new InternalServerErrorException("createActor() not available");
             });
 
-        let actorDTO = this.entityToDTO(entity);
+        let actorDTO = this.entityToDTO(actor)
 
-        ///////////////////////////save email address record//////////////////////////////////////
+        //save email address record if email address is provided in the request
         if (dto.emailAddress) {
-            await this.emailAddressesReadService.createNewEmailAddress(entity.actorId, dto.emailAddress)
-            let emailAddressDTO = this.emailAddressesService.entityToDto(entity.emailAddresses[0]);
+            await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, dto.emailAddress);
+            let emailAddressDTO = this.emailAddressesService.entityToDto(actor.emailAddresses[0]);
             actorDTO.emailAddresses = [emailAddressDTO];
         }
 
-        this.logger.log(`Created new Actor ${entity.fullName} ${entity.actorId}`)
+        this.logger.log(`Created new Actor ${actor.fullName} ${actor.actorId}`)
         return actorDTO;
     }
 

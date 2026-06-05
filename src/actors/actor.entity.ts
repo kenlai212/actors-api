@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, ObjectIdColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ObjectId } from "mongodb";
 import { randomUUID } from "crypto";
-import { EmailAddress } from "./emailAddresses/emailAddress.entity";
+import { PhoneNumber } from "./phoneNumber.entity";
 
 export enum Gender {
     MALE = 'MALE',
@@ -103,4 +103,12 @@ export class Actor {
 
     @Column({ type: "jsonb", array: true })
     emailAddresses: EmailAddress[];
+
+    @Column({ type: "jsonb", array: true })
+    phoneNumbers: PhoneNumber[];
+}
+
+export class EmailAddress {
+    addressString: string;
+    default: boolean;
 }
