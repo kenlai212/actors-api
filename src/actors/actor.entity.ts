@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, ObjectIdColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ObjectId } from "mongodb";
 import { randomUUID } from "crypto";
-import { EmailAddress } from "../emailAddresses/emailAddress.entity";
+import { EmailAddress } from "./emailAddresses/emailAddress.entity";
 
 export enum Gender {
     MALE = 'MALE',
@@ -9,7 +9,7 @@ export enum Gender {
     OTHER = 'OTHER'
 }
 
-export enum AgencyActorType {
+export enum ActorType {
     CANDIDATE = "CANDIDATE",
     AGENT = "AGENT",
     BROKER = "BROKER"
@@ -34,7 +34,7 @@ export enum ResidencyStatus {
 }
 
 @Entity()
-export class AgencyActor {
+export class Actor {
     @ObjectIdColumn()
     id: ObjectId;
 
@@ -59,9 +59,9 @@ export class AgencyActor {
     @Column({
         nullable: false,
         type: "enum",
-        enum: AgencyActorType
+        enum: ActorType
     })
-    agencyActorType: AgencyActorType;
+    actorType: ActorType;
 
     @Column({
         nullable: false,

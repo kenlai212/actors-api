@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
-import { AgencyActor } from './agencyActors/agencyActor.entity';
+import { Actor } from './actors/actor.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './app.config';
-import { AgencyActorsModule } from './agencyActors/agencyActors.module';
+import { AgencyActorsModule } from './actors/agencyActors.module';
 import { EmailAddressesReadModule } from './emailAddressesRead/emailAddressesRead.module';
 import { EmailAddressRead } from './emailAddressesRead/emailAddressRead.entity';
 
@@ -27,7 +27,7 @@ import { EmailAddressRead } from './emailAddressesRead/emailAddressRead.entity';
         type: 'mongodb',
         url: 'mongodb://ken:Maxsteel1596@127.0.0.1:27017/agency-actors-api?authSource=admin',
         entities: [
-          AgencyActor
+          Actor
         ],
         synchronize: true,
         useUnifiedTopology: true,

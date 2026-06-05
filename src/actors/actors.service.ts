@@ -1,31 +1,31 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AgencyActorType, AgencyActor } from "./agencyActor.entity";
+import { ActorType, Actor } from "./actor.entity";
 import { Repository } from "typeorm";
-import { AgencyActorDTO, NewAgencyActorRequestDTO, SearchAgencyActorsRequestDTO, SearchAgencyActorsResponseDTO, UpdateAgencyActorDTO } from "./agencyActors.dto";
+import { ActorDTO, NewActorRequestDTO, SearchActorsRequestDTO, SearchActorsResponseDTO, UpdateActorDTO } from "./actors.dtos";
 import { EmailAdddressesReadService } from "../emailAddressesRead/emailAddressesRead.service";
-import { EmailAddress } from "../emailAddresses/emailAddress.entity";
-import { EmailAddressesService } from "../emailAddresses/emailAddresses.service";
+import { EmailAddress } from "./emailAddresses/emailAddress.entity";
+import { EmailAddressesService } from "./emailAddresses/emailAddresses.service";
 
 @Injectable()
-export class AgencyActorsService {
+export class ActorsService {
     private readonly logger = new Logger(this.constructor.name);
 
     constructor(
-        @InjectRepository(AgencyActor)
-        private readonly entityRepository: Repository<AgencyActor>,
+        @InjectRepository(Actor)
+        private readonly entityRepository: Repository<Actor>,
         private readonly emailAddressesService: EmailAddressesService,
         private readonly emailAddressesReadService: EmailAdddressesReadService
     ) { }
 
-    async createAgencyActor(dto: NewAgencyActorRequestDTO): Promise<AgencyActorDTO> {
-        let entity = new AgencyActor();
+    async createActor(dto: NewActorRequestDTO): Promise<ActorDTO> {
+        let entity = new Actor();
         entity.fullName = dto.fullName;
 
         entity.dob = dto.dob;
         entity.gender = dto.gender;
         entity.countryOfResidence = dto.countryOfResidence;
-        entity.agencyActorType = dto.agencyActorType;
+        entity.actorType = dto.ActorType;
         entity.residencyStatus = dto.residencyStatus;
 
         //validate emailAddress if exist in request body
@@ -39,7 +39,7 @@ export class AgencyActorsService {
             entity.emailAddresses = [emailAddressEntity];
         }
 
-        ///////////////////////////save AgencyActor record //////////////////////////
+        ///////////////////////////save Actor record //////////////////////////
         entity = await this.entityRepository.save(entity)
             .catch((error) => {
                 this.logger.error(error.stack);
@@ -59,18 +59,18 @@ export class AgencyActorsService {
         return actorDTO;
     }
 
-    async findAgencyActor(agencyActorType: AgencyActorType, actorId: string): Promise<AgencyActorDTO> {
-        let agencyActor = await this.entityRepository.findOne({ where: { actorId, agencyActorType } })
+    async findActor(actorType: ActorType, actorId: string): Promise<ActorDTO> {
+        let Actor = await this.entityRepository.findOne({ where: { actorId, actorType } })
             .catch((error) => {
                 this.logger.error(error.stack);
                 throw new InternalServerErrorException("getCandidateById() not available");
             });
 
-        if (!agencyActor) {
-            throw new NotFoundException("Agency Actor not found");
+        if (!Actor) {
+            throw new NotFoundException(" Actor not found");
         }
 
-        return this.entityToDTO(agencyActor);
+        return this.entityToDTO(Actor);
     }
 
     async deleteActor(actorId: string): Promise<string> {
@@ -97,51 +97,51 @@ export class AgencyActorsService {
         return msg;
     }
 
-    async updateAgencyActor(dto: UpdateAgencyActorDTO): Promise<AgencyActorDTO> {
-        let agencyActor = await this.entityRepository.findOne({ where: { actorId: dto.actorId } })
+    async updateActor(dto: UpdateActorDTO): Promise<ActorDTO> {
+        let Actor = await this.entityRepository.findOne({ where: { actorId: dto.actorId } })
             .catch((error) => {
                 this.logger.error(error.stack);
-                throw new InternalServerErrorException("updateAgencyActor() not available");
+                throw new InternalServerErrorException("updateActor() not available");
             });
 
-        if (!agencyActor)
+        if (!Actor)
             throw new NotFoundException(`Invalid actorId ${dto.actorId}`);
 
-        if (dto.agencyActorType)
-            agencyActor.agencyActorType = dto.agencyActorType;
+        if (dto.ActorType)
+            Actor.actorType = dto.actorType;
 
         if (dto.fullName)
-            agencyActor.fullName = dto.fullName;
+            Actor.fullName = dto.fullName;
 
         if (dto.gender)
-            agencyActor.gender = dto.gender;
+            Actor.gender = dto.gender;
 
         if (dto.countryOfResidence)
-            agencyActor.countryOfResidence = dto.countryOfResidence;
+            Actor.countryOfResidence = dto.countryOfResidence;
 
         if (dto.residencyStatus)
-            agencyActor.residencyStatus = dto.residencyStatus;
+            Actor.residencyStatus = dto.residencyStatus;
 
-        agencyActor = await this.entityRepository.save(agencyActor)
+        Actor = await this.entityRepository.save(Actor)
             .catch((error) => {
                 this.logger.error(error.stack);
-                throw new InternalServerErrorException("updateAgencyActor() not available");
+                throw new InternalServerErrorException("updateActor() not available");
             });
 
-        return this.entityToDTO(agencyActor);
+        return this.entityToDTO(Actor);
     }
 
-    async searchAgencyActor(dto: SearchAgencyActorsRequestDTO): Promise<SearchAgencyActorsResponseDTO> {
-        const agencyActors = await this.entityRepository.find({ where: { fullName: dto.fullName } })
+    async searchActor(dto: SearchActorsRequestDTO): Promise<SearchActorsResponseDTO> {
+        const Actors = await this.entityRepository.find({ where: { fullName: dto.fullName } })
             .catch((error) => {
                 this.logger.error(error.stack);
                 throw new InternalServerErrorException("getCandidateById() not available");
             });
 
-        let responseDTO = new SearchAgencyActorsResponseDTO();
-        responseDTO.agencyActors = [];
-        agencyActors.forEach(actor => {
-            responseDTO.agencyActors.push(this.entityToDTO(actor))
+        let responseDTO = new SearchActorsResponseDTO();
+        responseDTO.actors = [];
+        Actors.forEach(actor => {
+            responseDTO.actors.push(this.entityToDTO(actor))
         });
 
         return responseDTO;
@@ -158,10 +158,10 @@ export class AgencyActorsService {
             throw new BadRequestException(`Invalid actorId : ${actorId}`)
     }
 
-    private entityToDTO(entity: AgencyActor): AgencyActorDTO {
-        let dto = new AgencyActorDTO();
+    private entityToDTO(entity: Actor): ActorDTO {
+        let dto = new ActorDTO();
         dto.actorId = entity.actorId;
-        dto.agencyActorType = entity.agencyActorType;
+        dto.actorType = entity.actorType;
         dto.fullName = entity.fullName;
         dto.gender = entity.gender;
         dto.dob = entity.dob;

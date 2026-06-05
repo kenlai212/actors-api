@@ -1,20 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, MaxLength, IsEmail, IsOptional, IsDate, IsDateString, IsEnum, IsUUID, IsArray } from 'class-validator';
-import { AgencyActorType, Country, Gender, ResidencyStatus } from "./agencyActor.entity";
-import { EmailAddressDTO } from "../emailAddresses/emailAddresses.dtos";
+import { IsNotEmpty, IsString, MaxLength, IsEmail, IsOptional, IsDateString, IsEnum, IsUUID, IsArray } from 'class-validator';
+import { ActorType, Country, Gender, ResidencyStatus } from "./actor.entity";
+import { EmailAddressDTO } from "./emailAddresses/emailAddresses.dtos";
 
-export class AgencyActorDTO {
+export class ActorDTO {
     @ApiProperty({
-        description: 'Target Agency Actor ID'
+        description: 'Target Actor ID'
     })
     actorId: string;
 
     @ApiProperty({
-        description: `Agency Actor Type : ${Object.keys(AgencyActorType)}`,
-        enum: AgencyActorType,
-        enumName: "AgencyActorType"
+        description: `Actor Type : ${Object.keys(ActorType)}`,
+        enum: ActorType,
+        enumName: "ActorType"
     })
-    agencyActorType: AgencyActorType;
+    actorType: ActorType;
 
     @ApiProperty({
         description: 'Actor fullname',
@@ -61,33 +61,32 @@ export class AgencyActorDTO {
     residencyStatus!: ResidencyStatus;
 }
 
-export class FindAgencyActorRequestDTO {
+export class FindActorRequestDTO {
     @ApiProperty({
-        description: `Agency Actor Type : ${Object.keys(AgencyActorType)}`,
-        enum: AgencyActorType,
-        enumName: "AgencyActorType"
+        description: ` Actor Type : ${Object.keys(ActorType)}`,
+        enum: ActorType,
+        enumName: "ActorType"
     })
-    @IsEnum(AgencyActorType)
+    @IsEnum(ActorType)
     @IsNotEmpty()
-    agencyActorType: AgencyActorType;
+    actorType: ActorType;
 
     @ApiProperty({
-        description: 'Target Agency Actor ID',
-        example: "96e4e28e-2404-4a4f-b69a-6b0709559596"
+        description: 'Target  Actor ID'
     })
     @IsNotEmpty()
     @IsUUID()
     actorId: string;
 }
 
-export class NewAgencyActorRequestDTO {
+export class NewActorRequestDTO {
     @ApiProperty({
-        description: `Agency Actor Type : ${Object.keys(AgencyActorType)}`,
-        example: AgencyActorType.CANDIDATE
+        description: `Actor Type : ${Object.keys(ActorType)}`,
+        example: ActorType.CANDIDATE
     })
     @IsNotEmpty()
-    @IsEnum(AgencyActorType)
-    agencyActorType: AgencyActorType;
+    @IsEnum(ActorType)
+    ActorType: ActorType;
 
     @ApiProperty({
         description: `Actor's Full Name`,
@@ -142,21 +141,21 @@ export class NewAgencyActorRequestDTO {
     residencyStatus: ResidencyStatus;
 }
 
-export class UpdateAgencyActorDTO extends NewAgencyActorRequestDTO {
+export class UpdateActorDTO extends NewActorRequestDTO {
     @ApiProperty({
-        description: 'Target Agency Actor ID',
-        example: "96e4e28e-2404-4a4f-b69a-6b0709559596"
+        description: 'Target  Actor ID'
     })
     @IsNotEmpty()
     @IsUUID()
     actorId: string;
 
     @ApiPropertyOptional({
-        description: `Agency Actor Type : ${Object.keys(AgencyActorType)}`,
-        example: AgencyActorType.CANDIDATE
+        description: `Actor Type : ${Object.keys(ActorType)}`,
+        example: ActorType.CANDIDATE,
+        enum: ActorType
     })
     @IsOptional()
-    declare agencyActorType: AgencyActorType;
+    declare actorType: ActorType;
 
     @ApiPropertyOptional({
         description: `Actor's Full Name`,
@@ -166,11 +165,9 @@ export class UpdateAgencyActorDTO extends NewAgencyActorRequestDTO {
     @IsString()
     @MaxLength(255)
     declare fullName: string;
-
-
 }
 
-export class SearchAgencyActorsRequestDTO {
+export class SearchActorsRequestDTO {
     @ApiProperty({
         description: `Actor's Full Name`,
         example: "Jane Smith"
@@ -181,11 +178,11 @@ export class SearchAgencyActorsRequestDTO {
     fullName: string;
 }
 
-export class SearchAgencyActorsResponseDTO {
+export class SearchActorsResponseDTO {
     @ApiProperty({
         description: `List of Actors`
     })
     @IsNotEmpty()
     @IsArray()
-    agencyActors: AgencyActorDTO[];
+    actors: ActorDTO[];
 }

@@ -4,6 +4,13 @@ import { EmailAddressDTO } from "./emailAddresses.dtos"
 
 @Injectable()
 export class EmailAddressesService {
+    async addEmailAddress(dto: EmailAddressDTO): Promise<EmailAddress> {
+        const emailAddress = new EmailAddress();
+        emailAddress.addressString = dto.addressString;
+        emailAddress.default = dto.default;
+        return emailAddress;
+    }
+
     entityToDto(entity: EmailAddress): EmailAddressDTO {
         const dto = new EmailAddressDTO();
         dto.addressString = entity.addressString;
