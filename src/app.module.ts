@@ -5,7 +5,7 @@ import { AuthGuard } from './auth.guard';
 import { Actor } from './actors/actor.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './app.config';
-import { AgencyActorsModule } from './actors/agencyActors.module';
+import { AgencyActorsModule } from './actors/actors.module';
 import { EmailAddressesReadModule } from './emailAddressesRead/emailAddressesRead.module';
 import { EmailAddressRead } from './emailAddressesRead/emailAddressRead.entity';
 
