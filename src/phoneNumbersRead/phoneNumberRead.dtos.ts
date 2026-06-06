@@ -1,44 +1,35 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsString, MaxLength } from "class-validator";
-import { CountryCode } from "./phoneNumberRead.entity";
 import { PhoneNumberType } from "../actors/phoneNumber.entity";
 
 export class PhoneNumberReadDTO {
     @ApiProperty({
         description: `Actor ID`,
-        example: '96e4e28e'
     })
     actorId: string;
 
     @ApiProperty({
         description: `Asset ID`,
-        example: 'b69a-6b0709559596'
     })
     assetId: string;
 
     @ApiProperty({
-        description: 'Phone Number country code',
-        enum: CountryCode,
-        example: CountryCode.HK
+        description: 'Phone Number country code'
     })
-    countryCode: CountryCode;
+    countryCode: string;
 
     @ApiProperty({
         description: 'Phone Number',
-        example: "12345678"
     })
     numberString: string;
 
     @ApiProperty({
-        description: 'Phone Number Type',
-        enum: PhoneNumberType,
-        enumName: "PhoneNumberType",
-        example: PhoneNumberType.MOBILE
+        description: 'Phone Number Type'
     })
-    phoneNumberType: PhoneNumberType;
+    phoneNumberType: string;
 }
 
-export class FindPhoneNumberRequestDTO {
+/*export class FindPhoneNumberRequestDTO {
     @ApiPropertyOptional({
         description: 'Asset ID',
     })
@@ -54,7 +45,7 @@ export class FindPhoneNumberRequestDTO {
         enumName: "countryCode"
     })
     @IsOptional()
-    @IsEnum(CountryCode)
+    @Is(CountryCode)
     countryCode!: CountryCode;
 
     @ApiPropertyOptional({
@@ -65,4 +56,4 @@ export class FindPhoneNumberRequestDTO {
     @IsString()
     @MaxLength(36)
     numberString!: string;
-}
+}*/

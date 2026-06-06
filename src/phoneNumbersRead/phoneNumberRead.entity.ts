@@ -1,12 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-export enum CountryCode {
-    HK = "+852",
-    CH = "+86",
-    SG = "+65",
-    JP = "+81"
-}
-
 @Entity()
 export class PhoneNumberRead {
     @PrimaryGeneratedColumn('uuid')
@@ -27,10 +20,9 @@ export class PhoneNumberRead {
 
     @Column({
         nullable: false,
-        type: "enum",
-        enum: CountryCode,
+        type: "varchar",
     })
-    countryCode: CountryCode;
+    countryCode: string;
 
     @Column({
         nullable: false,

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CountryCode, PhoneNumberRead } from "./phoneNumberRead.entity";
+import { PhoneNumberRead } from "./phoneNumberRead.entity";
 import { PhoneNumberReadDTO } from "./phoneNumberRead.dtos";
 
 @Injectable()
@@ -13,7 +13,7 @@ export class PhoneNumbersReadService {
         private readonly entityRepository: Repository<PhoneNumberRead>,
     ) { }
 
-    async createNewPhoneNumber(actorId: string, countryCode: CountryCode, numberString: string): Promise<PhoneNumberReadDTO> {
+    async createNewPhoneNumber(actorId: string, countryCode: string, numberString: string): Promise<PhoneNumberReadDTO> {
         let phoneNumberEntity = new PhoneNumberRead();
         await this.validateUniquePhoneNumber(countryCode, numberString);
 
@@ -29,7 +29,7 @@ export class PhoneNumbersReadService {
         return this.entityToDTO(phoneNumberEntity);
     }
 
-    async findPhoneNumber(countryCode: CountryCode, numberString: string): Promise<PhoneNumberReadDTO> {
+    async findPhoneNumber(countryCode: string, numberString: string): Promise<PhoneNumberReadDTO> {
         const whereClause = { countryCode: countryCode, numberString: numberString };
 
         const phoneNumberRead = await this.entityRepository.findOne({ where: whereClause })
@@ -44,7 +44,7 @@ export class PhoneNumbersReadService {
         return this.entityToDTO(phoneNumberRead);
     }
 
-    async validateUniquePhoneNumber(countryCode: CountryCode, numberString: string) {
+    async validateUniquePhoneNumber(countryCode: string, numberString: string) {
         let phoneNumber = await this.entityRepository.findOne({ where: { countryCode, numberString } })
             .catch((error) => {
                 this.logger.error(error);
