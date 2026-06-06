@@ -1,17 +1,17 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PhoneNumberRead } from "./phoneNumberRead.entity";
-import { PhoneNumbersService } from "./phoneNumbersRead.service";
+import { PhoneNumbersReadService } from "./phoneNumbersRead.service";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([PhoneNumberRead]),
+        TypeOrmModule.forFeature([PhoneNumberRead], "rdb"),
     ],
     providers: [
-        PhoneNumbersService
+        PhoneNumbersReadService
     ],
     exports: [
-        PhoneNumbersService
+        PhoneNumbersReadService
     ]
 })
-export class phoneNumbersModule { }
+export class phoneNumbersReadModule { }

@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { EmailAdddressesReadService } from "./emailAddressesRead.service";
+import { EmailAddressesReadService } from "./emailAddressesRead.service";
 import { EmailAddressRead } from "./emailAddressRead.entity";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -8,10 +8,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
         TypeOrmModule.forFeature([EmailAddressRead], "rdb")
     ],
     providers: [
-        EmailAdddressesReadService
+        EmailAddressesReadService
     ],
     exports: [
-        EmailAdddressesReadService
+        EmailAddressesReadService
     ]
 })
 export class EmailAddressesReadModule { }

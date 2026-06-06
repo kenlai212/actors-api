@@ -4,6 +4,7 @@ import { ActorType, Actor } from "./actor.entity";
 import { Repository } from "typeorm";
 import { ActorDTO, NewActorRequestDTO, SearchActorsRequestDTO, SearchActorsResponseDTO, UpdateActorDTO } from "./actors.dtos";
 import { EmailAddressesService } from "./emailAddresses.service";
+import { PhoneNumbersService } from "./phoneNumbers.service";
 
 @Injectable()
 export class ActorsService {
@@ -12,7 +13,8 @@ export class ActorsService {
     constructor(
         @InjectRepository(Actor)
         private readonly entityRepository: Repository<Actor>,
-        private readonly emailAddressesService: EmailAddressesService
+        private readonly emailAddressesService: EmailAddressesService,
+        private readonly phoneNumbersService: PhoneNumbersService
     ) { }
 
     async createActor(dto: NewActorRequestDTO): Promise<ActorDTO> {
@@ -52,6 +54,13 @@ export class ActorsService {
             await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, dto.emailAddress);
             let emailAddressDTO = this.emailAddressesService.entityToDto(actor.emailAddresses[0]);
             actorDTO.emailAddresses = [emailAddressDTO];
+        }
+
+        //save phone number record if phone number string, country code and phone number type are provided in the request
+        if (dto.numberString && dto.countryCode && dto.phoneNumberType) {
+            await this.phoneNumbersService.createNewPhoneNumberRead(actor.actorId, dto.countryCode, dto.numberString);
+            let phoneNumberDTO = this.phoneNumbersService.entityToDTO(actor.phoneNumbers[0]);
+            actorDTO.phoneNumbers = [phoneNumberDTO];
         }
 
         this.logger.log(`Created new Actor ${actor.fullName} ${actor.actorId}`)

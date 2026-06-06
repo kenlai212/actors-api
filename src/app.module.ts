@@ -8,6 +8,8 @@ import configuration from './app.config';
 import { AgencyActorsModule } from './actors/actors.module';
 import { EmailAddressesReadModule } from './emailAddressesRead/emailAddressesRead.module';
 import { EmailAddressRead } from './emailAddressesRead/emailAddressRead.entity';
+import { PhoneNumberRead } from './phoneNumbersRead/phoneNumberRead.entity';
+import { phoneNumbersReadModule } from './phoneNumbersRead/phoneNumbersRead.module';
 
 @Module({
   providers: [
@@ -47,6 +49,7 @@ import { EmailAddressRead } from './emailAddressesRead/emailAddressRead.entity';
         database: configService.get("database.databaseName"),
         entities: [
           EmailAddressRead,
+          PhoneNumberRead
         ],
         synchronize: true,
         autoLoadEntities: true,
@@ -55,7 +58,8 @@ import { EmailAddressRead } from './emailAddressesRead/emailAddressRead.entity';
       inject: [ConfigService]
     }),
     AgencyActorsModule,
-    EmailAddressesReadModule
+    EmailAddressesReadModule,
+    phoneNumbersReadModule
   ]
 })
 export class AppModule { }

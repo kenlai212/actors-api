@@ -20,6 +20,13 @@ export class PhoneNumberRead {
 
     @Column({
         nullable: false,
+        type: "varchar",
+        length: 36
+    })
+    actorId: string
+
+    @Column({
+        nullable: false,
         type: "enum",
         enum: CountryCode,
     })
