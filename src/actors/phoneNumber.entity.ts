@@ -1,4 +1,5 @@
 import { Column } from "typeorm";
+import { Asset } from "./asset.entity";
 
 export enum PhoneNumberType {
     MOBILE = "MOBILE",
@@ -13,7 +14,7 @@ export enum CountryCode {
     JP = "+81"
 }
 
-export class PhoneNumber {
+export class PhoneNumber extends Asset {
     @Column({
         nullable: false,
         type: "enum",

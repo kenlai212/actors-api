@@ -13,13 +13,14 @@ export class PhoneNumbersReadService {
         private readonly entityRepository: Repository<PhoneNumberRead>,
     ) { }
 
-    async createNewPhoneNumber(actorId: string, countryCode: string, numberString: string): Promise<PhoneNumberReadDTO> {
+    async createNewPhoneNumber(actorId: string, assetId: string, countryCode: string, numberString: string): Promise<PhoneNumberReadDTO> {
         let phoneNumberEntity = new PhoneNumberRead();
         await this.validateUniquePhoneNumber(countryCode, numberString);
 
         phoneNumberEntity.countryCode = countryCode;
         phoneNumberEntity.numberString = numberString;
         phoneNumberEntity.actorId = actorId;
+        phoneNumberEntity.assetId = assetId;
         phoneNumberEntity = await this.entityRepository.save(phoneNumberEntity)
             .catch((error) => {
                 this.logger.error(error.stack);

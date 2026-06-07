@@ -175,15 +175,27 @@ export class NewActorRequestDTO {
     residencyStatus: ResidencyStatus;
 }
 export class EmailAddressDTO {
+    @ApiProperty({
+        description: `Email Address's Asset ID`,
+    })
+    assetId: string;
+
+    @ApiProperty({
+        description: 'Email Address String',
+    })
     addressString: string;
-    default: boolean;
+
+    @ApiProperty({
+        description: 'Default Email Address flag',
+    })
+    isDefault: boolean;
 }
 
 export class PhoneNumberDTO {
     @ApiProperty({
-        description: 'PhoneNumber ID',
+        description: 'Phone Number Asset ID',
     })
-    phoneNumberId: string;
+    assetId: string;
 
     @ApiProperty({
         description: 'Phone Number country code',

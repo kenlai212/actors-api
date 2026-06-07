@@ -13,7 +13,7 @@ export class EmailAddressesReadService {
         private readonly entityRepository: Repository<EmailAddressRead>
     ) { }
 
-    async createNewEmailAddress(actorId: string, addressString: string): Promise<EmailAddressReadDTO> {
+    async createNewEmailAddress(actorId: string, assetId: string, addressString: string): Promise<EmailAddressReadDTO> {
         let emailAddressEntity = new EmailAddressRead();
 
         if (await this.checkingExisting(addressString) === true)
@@ -21,6 +21,7 @@ export class EmailAddressesReadService {
         emailAddressEntity.addressString = addressString;
 
         emailAddressEntity.actorId = actorId;
+        emailAddressEntity.assetId = assetId;
 
         emailAddressEntity = await this.entityRepository.save(emailAddressEntity)
             .catch((error) => {

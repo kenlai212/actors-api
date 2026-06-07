@@ -33,11 +33,7 @@ export class ActorsService {
 
         //add phone number to actor entity if phone number string, country code and phone number type are provided in the request
         if (dto.numberString && dto.countryCode && dto.phoneNumberType) {
-            actor.phoneNumbers = [{
-                numberString: dto.numberString,
-                countryCode: dto.countryCode,
-                phoneNumberType: dto.phoneNumberType
-            }]
+            actor = await this.phoneNumbersService.addPhoneNumber(actor, dto.countryCode, dto.numberString, dto.phoneNumberType);
         }
 
         //save Actor record 
@@ -51,14 +47,14 @@ export class ActorsService {
 
         //save email address record if email address is provided in the request
         if (dto.emailAddress) {
-            await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, dto.emailAddress);
+            await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, actor.emailAddresses[0].assetId, dto.emailAddress);
             let emailAddressDTO = this.emailAddressesService.entityToDto(actor.emailAddresses[0]);
             actorDTO.emailAddresses = [emailAddressDTO];
         }
 
         //save phone number record if phone number string, country code and phone number type are provided in the request
         if (dto.numberString && dto.countryCode && dto.phoneNumberType) {
-            await this.phoneNumbersService.createNewPhoneNumberRead(actor.actorId, dto.countryCode, dto.numberString);
+            await this.phoneNumbersService.createNewPhoneNumberRead(actor.actorId, actor.phoneNumbers[0].assetId, dto.countryCode, dto.numberString);
             let phoneNumberDTO = this.phoneNumbersService.entityToDTO(actor.phoneNumbers[0]);
             actorDTO.phoneNumbers = [phoneNumberDTO];
         }
