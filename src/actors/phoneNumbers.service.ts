@@ -3,7 +3,6 @@ import { PhoneNumberDTO } from "./actors.dtos";
 import { CountryCode, PhoneNumber, PhoneNumberType } from "./phoneNumber.entity";
 import { Actor } from "./actor.entity";
 import { PhoneNumbersReadService } from "../phoneNumbersRead/phoneNumbersRead.service";
-import { randomUUID } from "crypto";
 import { AssetsService } from "./assets.service";
 
 @Injectable()
@@ -24,7 +23,12 @@ export class PhoneNumbersService extends AssetsService<PhoneNumber> {
         phoneNumberEntity.countryCode = countryCode;
         phoneNumberEntity.numberString = numberString;
         phoneNumberEntity.phoneNumberType = phoneNumberType;
-        actor.phoneNumbers = [phoneNumberEntity];
+
+        if (!actor.phoneNumbers || actor.phoneNumbers.length === 0) {
+            actor.phoneNumbers = [phoneNumberEntity];
+        } else {
+            actor.phoneNumbers.push(phoneNumberEntity);
+        }
 
         return actor;
     }

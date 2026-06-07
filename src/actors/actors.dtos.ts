@@ -244,23 +244,3 @@ export class UpdateActorDTO extends NewActorRequestDTO {
     @MaxLength(255)
     declare fullName: string;
 }
-
-export class SearchActorsRequestDTO {
-    @ApiProperty({
-        description: `Actor's Full Name`,
-        example: "Jane Smith"
-    })
-    @IsNotEmpty()
-    @IsString()
-    @MaxLength(255)
-    fullName: string;
-}
-
-export class SearchActorsResponseDTO {
-    @ApiProperty({
-        description: `List of Actors`
-    })
-    @IsNotEmpty()
-    @IsArray()
-    actors: ActorDTO[];
-}

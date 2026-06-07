@@ -20,9 +20,14 @@ export class EmailAddressesService extends AssetsService<EmailAddress> {
         let emailAddressEntity = new EmailAddress();
         emailAddressEntity = this.setAssetAttributes(emailAddressEntity);
 
-        emailAddressEntity.addressString = addressString,
-            emailAddressEntity.isDefault = isDefault;
-        actor.emailAddresses = [emailAddressEntity];
+        emailAddressEntity.addressString = addressString;
+        emailAddressEntity.isDefault = isDefault;
+
+        if (!actor.emailAddresses || actor.emailAddresses.length === 0) {
+            actor.emailAddresses = [emailAddressEntity];
+        } else {
+            actor.emailAddresses.push(emailAddressEntity);
+        }
 
         return actor;
     }

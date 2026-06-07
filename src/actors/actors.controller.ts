@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ActorsService } from "./actors.service";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
-import { ActorDTO, FindActorRequestDTO, NewActorRequestDTO, SearchActorsRequestDTO, SearchActorsResponseDTO, UpdateActorDTO } from "./actors.dtos";
+import { ActorDTO, FindActorRequestDTO, NewActorRequestDTO, UpdateActorDTO } from "./actors.dtos";
 import { AuthGuard } from "../auth.guard";
 
 @Controller("/actors")
@@ -64,18 +64,5 @@ export class ActorsController {
     })
     async updateActor(@Body() body: UpdateActorDTO): Promise<ActorDTO> {
         return await this.actorsService.updateActor(body);
-    }
-
-    @Get("/full-name")
-    @ApiOperation({
-        summary: 'Search  Actors',
-        description: `Search  Actors by fullName`
-    })
-    @ApiOkResponse({
-        description: `Successfully PUT response a ${ActorDTO.name}`,
-        type: ActorDTO,
-    })
-    async searchActors(@Query() query: SearchActorsRequestDTO): Promise<SearchActorsResponseDTO> {
-        return await this.actorsService.searchActor(query);
     }
 }

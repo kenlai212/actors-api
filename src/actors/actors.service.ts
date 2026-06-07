@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ActorType, Actor } from "./actor.entity";
 import { Repository } from "typeorm";
-import { ActorDTO, NewActorRequestDTO, SearchActorsRequestDTO, SearchActorsResponseDTO, UpdateActorDTO } from "./actors.dtos";
+import { ActorDTO, NewActorRequestDTO, UpdateActorDTO } from "./actors.dtos";
 import { EmailAddressesService } from "./emailAddresses.service";
 import { PhoneNumbersService } from "./phoneNumbers.service";
 
@@ -17,23 +17,23 @@ export class ActorsService {
         private readonly phoneNumbersService: PhoneNumbersService
     ) { }
 
-    async createActor(dto: NewActorRequestDTO): Promise<ActorDTO> {
+    async createActor(requestDTO: NewActorRequestDTO): Promise<ActorDTO> {
         let actor = new Actor();
-        actor.fullName = dto.fullName;
+        actor.fullName = requestDTO.fullName;
 
-        actor.dob = dto.dob;
-        actor.gender = dto.gender;
-        actor.countryOfResidence = dto.countryOfResidence;
-        actor.actorType = dto.ActorType;
-        actor.residencyStatus = dto.residencyStatus;
+        actor.dob = requestDTO.dob;
+        actor.gender = requestDTO.gender;
+        actor.countryOfResidence = requestDTO.countryOfResidence;
+        actor.actorType = requestDTO.ActorType;
+        actor.residencyStatus = requestDTO.residencyStatus;
 
         //validate emailaddress and add to actor entity if email address is provided in the request
-        if (dto.emailAddress)
-            actor = await this.emailAddressesService.addNewEmailAddress(actor, dto.emailAddress, true);
+        if (requestDTO.emailAddress)
+            actor = await this.emailAddressesService.addNewEmailAddress(actor, requestDTO.emailAddress, true);
 
         //add phone number to actor entity if phone number string, country code and phone number type are provided in the request
-        if (dto.numberString && dto.countryCode && dto.phoneNumberType) {
-            actor = await this.phoneNumbersService.addPhoneNumber(actor, dto.countryCode, dto.numberString, dto.phoneNumberType);
+        if (requestDTO.numberString && requestDTO.countryCode && requestDTO.phoneNumberType) {
+            actor = await this.phoneNumbersService.addPhoneNumber(actor, requestDTO.countryCode, requestDTO.numberString, requestDTO.phoneNumberType);
         }
 
         //save Actor record 
@@ -46,20 +46,14 @@ export class ActorsService {
         let actorDTO = this.entityToDTO(actor)
 
         //save email address record if email address is provided in the request
-        if (dto.emailAddress) {
-            await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, actor.emailAddresses[0].assetId, dto.emailAddress);
-            let emailAddressDTO = this.emailAddressesService.entityToDto(actor.emailAddresses[0]);
-            actorDTO.emailAddresses = [emailAddressDTO];
-        }
+        if (requestDTO.emailAddress)
+            await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, actor.emailAddresses[0].assetId, requestDTO.emailAddress);
 
         //save phone number record if phone number string, country code and phone number type are provided in the request
-        if (dto.numberString && dto.countryCode && dto.phoneNumberType) {
-            await this.phoneNumbersService.createNewPhoneNumberRead(actor.actorId, actor.phoneNumbers[0].assetId, dto.countryCode, dto.numberString);
-            let phoneNumberDTO = this.phoneNumbersService.entityToDTO(actor.phoneNumbers[0]);
-            actorDTO.phoneNumbers = [phoneNumberDTO];
-        }
+        if (requestDTO.numberString && requestDTO.countryCode && requestDTO.phoneNumberType)
+            await this.phoneNumbersService.createNewPhoneNumberRead(actor.actorId, actor.phoneNumbers[0].assetId, requestDTO.countryCode, requestDTO.numberString);
 
-        this.logger.log(`Created new Actor ${actor.fullName} ${actor.actorId}`)
+        this.logger.log(`Created new Actor ${JSON.stringify(actorDTO)}`);
         return actorDTO;
     }
 
@@ -88,15 +82,13 @@ export class ActorsService {
             throw new NotFoundException("Actor not found");
         }
 
-        const actorName = actor.fullName;
-
         await this.entityRepository.remove(actor)
             .catch((error) => {
                 this.logger.error(error.stack);
                 throw new InternalServerErrorException("deleteActor() not available");
             });
 
-        const msg = `Successfully deleted ${this.entityRepository.metadata.name} ${actorName}`
+        const msg = `Successfully deleted ${this.entityRepository.metadata.name} with actorId ${actorId}`;
         this.logger.log(msg);
         return msg;
     }
@@ -135,33 +127,6 @@ export class ActorsService {
         return this.entityToDTO(Actor);
     }
 
-    async searchActor(dto: SearchActorsRequestDTO): Promise<SearchActorsResponseDTO> {
-        const Actors = await this.entityRepository.find({ where: { fullName: dto.fullName } })
-            .catch((error) => {
-                this.logger.error(error.stack);
-                throw new InternalServerErrorException("getCandidateById() not available");
-            });
-
-        let responseDTO = new SearchActorsResponseDTO();
-        responseDTO.actors = [];
-        Actors.forEach(actor => {
-            responseDTO.actors.push(this.entityToDTO(actor))
-        });
-
-        return responseDTO;
-    }
-
-    async validateActorId(actorId: string) {
-        const candidate = await this.entityRepository.findOne({ where: { actorId } })
-            .catch((error) => {
-                this.logger.error(error.stack);
-                throw new InternalServerErrorException("validateActorId() not available");
-            });
-
-        if (!candidate)
-            throw new BadRequestException(`Invalid actorId : ${actorId}`)
-    }
-
     private entityToDTO(entity: Actor): ActorDTO {
         let dto = new ActorDTO();
         dto.actorId = entity.actorId;
@@ -173,6 +138,21 @@ export class ActorsService {
         dto.residencyStatus = entity.residencyStatus;
         dto.createdAt = entity.createdAt;
         dto.updatedAt = entity.updatedAt;
+
+        if (entity.emailAddresses && entity.emailAddresses.length > 0) {
+            dto.emailAddresses = [];
+            entity.emailAddresses.forEach(emailAddress => {
+                dto.emailAddresses.push(this.emailAddressesService.entityToDto(emailAddress));
+            });
+        }
+
+        if (entity.phoneNumbers && entity.phoneNumbers.length > 0) {
+            dto.phoneNumbers = [];
+            entity.phoneNumbers.forEach(phoneNumber => {
+                dto.phoneNumbers.push(this.phoneNumbersService.entityToDTO(phoneNumber));
+            });
+        }
+
         return dto;
     }
 }

@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { randomUUID } from "crypto";
 import { PhoneNumber } from "./phoneNumber.entity";
 import { EmailAddress } from "./emailAddress.entity";
+import { GovIssueDoc } from "./govIssueDoc.entity";
 
 export enum Gender {
     MALE = 'MALE',
@@ -107,4 +108,7 @@ export class Actor {
 
     @Column({ type: "jsonb", array: true })
     phoneNumbers: PhoneNumber[];
+
+    @Column({ type: "jsonb", array: true })
+    govIssueDocs: GovIssueDoc[];
 }
