@@ -3,13 +3,14 @@ import { ActorsService } from "./actors.service";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import { ActorDTO, FindActorRequestDTO, NewActorRequestDTO, UpdateActorDTO } from "./actors.dtos";
 import { AuthGuard } from "../auth.guard";
+import { GovIssueDocsService } from "./govIssueDocs.service";
 
 @Controller("/actors")
 export class ActorsController {
     logger = new Logger(this.constructor.name);
 
     constructor(
-        private readonly actorsService: ActorsService,
+        private readonly actorsService: ActorsService
     ) { }
 
     @UseGuards(AuthGuard)

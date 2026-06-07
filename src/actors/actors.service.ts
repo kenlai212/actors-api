@@ -117,7 +117,7 @@ export class ActorsService {
         return this.entityToDTO(Actor);
     }
 
-    private entityToDTO(entity: Actor): ActorDTO {
+    entityToDTO(entity: Actor): ActorDTO {
         let dto = new ActorDTO();
         dto.actorId = entity.actorId;
         dto.actorType = entity.actorType;

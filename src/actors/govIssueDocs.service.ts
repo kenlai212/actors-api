@@ -10,7 +10,7 @@ export class GovIssueDocsService extends AssetsService<GovIssueDoc> {
         super();
     }
 
-    async addGovIssueDoc(actorId: string, issuerGov: IssuerGoverment, issueDocType: IssueDocType, issueDocumentNuber: string): Promise<Actor> {
+    async addGovIssueDoc(actorId: string, issuerGov: IssuerGoverment, issueDocType: IssueDocType, issueDocumentNubmer: string): Promise<Actor> {
         let actor = await this.getActorEntity(actorId);
 
         let govIssueDocEntity = new GovIssueDoc();
@@ -18,7 +18,7 @@ export class GovIssueDocsService extends AssetsService<GovIssueDoc> {
 
         govIssueDocEntity.issuerGoverment = issuerGov;
         govIssueDocEntity.issueDocType = issueDocType;
-        govIssueDocEntity.issueDocNumber = issueDocumentNuber;
+        govIssueDocEntity.issueDocNumber = issueDocumentNubmer;
 
         if (!actor.govIssueDocs || actor.govIssueDocs.length === 0) {
             actor.govIssueDocs = [govIssueDocEntity];
