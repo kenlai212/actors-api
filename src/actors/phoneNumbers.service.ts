@@ -13,11 +13,9 @@ export class PhoneNumbersService extends AssetsService<PhoneNumber> {
         super();
     }
 
-    async createNewPhoneNumberRead(actorId: string, assetId: string, countryCode: CountryCode, numberString: string) {
-        await this.phoneNumbersReadService.createNewPhoneNumber(actorId, assetId, countryCode, numberString);
-    }
+    async addPhoneNumber(actorId: string, countryCode: CountryCode, numberString: string, phoneNumberType: PhoneNumberType): Promise<Actor> {
+        let actor = await this.getActorEntity(actorId);
 
-    async addPhoneNumber(actor: Actor, countryCode: CountryCode, numberString: string, phoneNumberType: PhoneNumberType): Promise<Actor> {
         let phoneNumberEntity = new PhoneNumber();
         phoneNumberEntity = this.setAssetAttributes(phoneNumberEntity);
         phoneNumberEntity.countryCode = countryCode;
@@ -29,6 +27,10 @@ export class PhoneNumbersService extends AssetsService<PhoneNumber> {
         } else {
             actor.phoneNumbers.push(phoneNumberEntity);
         }
+
+        actor = await this.saveActor(actor);
+
+        await this.phoneNumbersReadService.createNewPhoneNumber(actorId, phoneNumberEntity.assetId, countryCode, numberString);
 
         return actor;
     }

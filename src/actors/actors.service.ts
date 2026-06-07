@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ActorType, Actor } from "./actor.entity";
 import { Repository } from "typeorm";
@@ -27,15 +27,6 @@ export class ActorsService {
         actor.actorType = requestDTO.ActorType;
         actor.residencyStatus = requestDTO.residencyStatus;
 
-        //validate emailaddress and add to actor entity if email address is provided in the request
-        if (requestDTO.emailAddress)
-            actor = await this.emailAddressesService.addNewEmailAddress(actor, requestDTO.emailAddress, true);
-
-        //add phone number to actor entity if phone number string, country code and phone number type are provided in the request
-        if (requestDTO.numberString && requestDTO.countryCode && requestDTO.phoneNumberType) {
-            actor = await this.phoneNumbersService.addPhoneNumber(actor, requestDTO.countryCode, requestDTO.numberString, requestDTO.phoneNumberType);
-        }
-
         //save Actor record 
         actor = await this.entityRepository.save(actor)
             .catch((error) => {
@@ -43,16 +34,15 @@ export class ActorsService {
                 throw new InternalServerErrorException("createActor() not available");
             });
 
-        let actorDTO = this.entityToDTO(actor)
-
         //save email address record if email address is provided in the request
         if (requestDTO.emailAddress)
-            await this.emailAddressesService.createNewEmailAddressRead(actor.actorId, actor.emailAddresses[0].assetId, requestDTO.emailAddress);
+            actor = await this.emailAddressesService.addNewEmailAddress(actor.actorId, requestDTO.emailAddress, true);
 
         //save phone number record if phone number string, country code and phone number type are provided in the request
         if (requestDTO.numberString && requestDTO.countryCode && requestDTO.phoneNumberType)
-            await this.phoneNumbersService.createNewPhoneNumberRead(actor.actorId, actor.phoneNumbers[0].assetId, requestDTO.countryCode, requestDTO.numberString);
+            actor = await this.phoneNumbersService.addPhoneNumber(actor.actorId, requestDTO.countryCode, requestDTO.numberString, requestDTO.phoneNumberType);
 
+        const actorDTO = this.entityToDTO(actor)
         this.logger.log(`Created new Actor ${JSON.stringify(actorDTO)}`);
         return actorDTO;
     }
@@ -61,11 +51,11 @@ export class ActorsService {
         let Actor = await this.entityRepository.findOne({ where: { actorId, actorType } })
             .catch((error) => {
                 this.logger.error(error.stack);
-                throw new InternalServerErrorException("getCandidateById() not available");
+                throw new InternalServerErrorException("findActor() not available");
             });
 
         if (!Actor) {
-            throw new NotFoundException(" Actor not found");
+            throw new NotFoundException("Actor not found");
         }
 
         return this.entityToDTO(Actor);

@@ -13,9 +13,11 @@ export class EmailAddressesService extends AssetsService<EmailAddress> {
         super();
     }
 
-    async addNewEmailAddress(actor: Actor, addressString: string, isDefault: boolean): Promise<Actor> {
+    async addNewEmailAddress(actorId: string, addressString: string, isDefault: boolean): Promise<Actor> {
         if (await this.emailAddressesReadService.checkingExisting(addressString))
             throw new BadRequestException(`Existing Email Address : ${addressString}`)
+
+        let actor = await this.getActorEntity(actorId);
 
         let emailAddressEntity = new EmailAddress();
         emailAddressEntity = this.setAssetAttributes(emailAddressEntity);
@@ -29,11 +31,11 @@ export class EmailAddressesService extends AssetsService<EmailAddress> {
             actor.emailAddresses.push(emailAddressEntity);
         }
 
-        return actor;
-    }
+        actor = await this.saveActor(actor);
 
-    async createNewEmailAddressRead(actorId: string, assetId: string, addressString: string) {
-        await this.emailAddressesReadService.createNewEmailAddress(actorId, assetId, addressString)
+        await this.emailAddressesReadService.createNewEmailAddress(actorId, emailAddressEntity.assetId, addressString)
+
+        return actor;
     }
 
     entityToDto(entity: EmailAddress): EmailAddressDTO {

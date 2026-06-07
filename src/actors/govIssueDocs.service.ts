@@ -5,11 +5,14 @@ import { Actor } from "./actor.entity";
 
 @Injectable()
 export class GovIssueDocsService extends AssetsService<GovIssueDoc> {
-    constructor() {
+    constructor(
+    ) {
         super();
     }
 
-    async addGovIssueDoc(actor: Actor, issuerGov: IssuerGoverment, issueDocType: IssueDocType, issueDocumentNuber: string): Promise<Actor> {
+    async addGovIssueDoc(actorId: string, issuerGov: IssuerGoverment, issueDocType: IssueDocType, issueDocumentNuber: string): Promise<Actor> {
+        let actor = await this.getActorEntity(actorId);
+
         let govIssueDocEntity = new GovIssueDoc();
         govIssueDocEntity = this.setAssetAttributes(govIssueDocEntity);
 
@@ -22,6 +25,8 @@ export class GovIssueDocsService extends AssetsService<GovIssueDoc> {
         } else {
             actor.govIssueDocs.push(govIssueDocEntity);
         }
+
+        actor = await this.saveActor(actor);
 
         return actor;
     }
